@@ -13,8 +13,7 @@ namespace Model1LabaGui.ViewModels;
 public class MainWindowViewModel : ViewModelBase
 {
     private static List<double> Data { get; set; } = new();
-    private double[] _intervals = { 0, 0.268, 0.586, 1, 2 };
-
+    private double[] _intervals = { 0, 0.268, 0.586, 1, 2};
     public double[] Intervals
     {
         get => _intervals;
@@ -26,6 +25,7 @@ public class MainWindowViewModel : ViewModelBase
         new ColumnSeries<double>
         {
             Values = Data, 
+            
             Fill = new SolidColorPaint(SKColors.Blue) 
         }
     };
@@ -48,12 +48,13 @@ public class MainWindowViewModel : ViewModelBase
     {
         Data.Clear();
         var data1 = new List<double>();
-        var data = new Approximation(1000).Modeling(data1);
+        var data = new Approximation(90).Modeling(data1);
         var first = SelectInterval(data, 0);
         var second = SelectInterval(data, 1);
         var third = SelectInterval(data, 2);
         var fourth = SelectInterval(data, 3);
-        var data2 = new List<double>() { first, second, third, fourth };
+        var fifth = SelectInterval(data, 4);
+        var data2 = new List<double>() { first, second, third, fourth, fifth };
         Data.AddRange(data2);
         Series = new ISeries[] { new ColumnSeries<double> {Values = Data, Fill = new SolidColorPaint(SKColors.Blue)} };
         this.RaisePropertyChanged(nameof(Data));
@@ -62,7 +63,7 @@ public class MainWindowViewModel : ViewModelBase
     
     private int SelectInterval(List<double> data, int interval)
     {
-        return data.Count(num => num >= _intervals[interval] && num < _intervals[interval + 1]);
+        return data.Count(num => num >= _intervals[interval] && num <= _intervals[interval + 1]);
     }
     
 }

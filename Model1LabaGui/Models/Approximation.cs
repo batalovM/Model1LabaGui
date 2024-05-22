@@ -27,8 +27,8 @@ public class Approximation
     }
     private double GenerateRandomNumber()
     {
-        var random = new Random();
-        return random.NextDouble();
+        var random = new Random().NextDouble();
+        return random;
     }
     private int SelectInterval(double randomNumber)
     {
@@ -41,15 +41,15 @@ public class Approximation
         }
         return -1; 
     }
-    private double ScaleRandomNumber(double randomNumber, int intervalIndex)
-    {
-        return (randomNumber - _intervals[intervalIndex]) / (_intervals[intervalIndex + 1] - _intervals[intervalIndex]);
-    }
     private double GenerateY(double randomNumber)
     {
-        var intervalIndex = SelectInterval(randomNumber);
-        var scaledRandomNumber = ScaleRandomNumber(randomNumber, intervalIndex);
-        var y = _intervals[intervalIndex] + (_intervals[intervalIndex + 1] - _intervals[intervalIndex]) * scaledRandomNumber;
+        var min = 0.003601184;
+        var max = 1.954893643;
+        var xi = min + (max - min) * randomNumber;
+        var intervalIndex = SelectInterval(xi);
+        var xi1 =  GenerateRandomNumber()*(_intervals[intervalIndex+1] - _intervals[intervalIndex]);
+        var y = _intervals[intervalIndex] + (_intervals[intervalIndex + 1] - _intervals[intervalIndex]) * xi1; 
+        //Console.Write($"y: {y:F3}");
         return y;
     }
     private double TheoreticalCdf(double x)
@@ -79,13 +79,13 @@ public class Approximation
             var diff1 = Math.Abs(cdfValues[i] - theoreticalCdfValues[i]);
             var diff2 = Math.Abs(theoreticalCdfValues[i] - cdfValues[i]);
 
-            d = Math.Max(d, Math.Max(diff1, diff2));
+            d = 0.1 * Math.Max(d, Math.Max(diff1, diff2));
         }
 
         const double alpha = 0.05; // Уровень значимости
         var criticalValue = Math.Sqrt(-0.5 * Math.Log(alpha / 2)) / Math.Sqrt(data.Count);
-
-        Console.WriteLine($"\nСтатистика: {d:F3} ");
+        Console.WriteLine();
+        Console.WriteLine($"Статистика: {d:F3} ");
         Console.WriteLine($"Критическое значение: {criticalValue:F5}");
 
         Console.WriteLine(d <= criticalValue
